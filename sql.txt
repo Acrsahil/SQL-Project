@@ -1,0 +1,47 @@
+
+// Making Views
+
+create view SalesConnections as
+select connections.id, connections.p1, connections.p2, connections.p3, connections.p4, customer.Customer_Name, sales.Total_Sales,sales.salesdate
+from
+    connections
+    inner join customer on customer.Customer_Id = connections.id
+    inner join sales on connections.id = sales.id;
+
+
+// for self
+SELECT 
+    CASE
+        WHEN SUM(CASE WHEN id = $myID THEN Total_Sales ELSE 0 END) < 5000 THEN 'insufficient balance'
+        WHEN SUM(CASE WHEN id = $myID THEN Total_Sales ELSE 0 END) >= 30000 THEN SUM(CASE WHEN id = $myID THEN Total_Sales * 0.30 ELSE 0 END)
+        WHEN SUM(CASE WHEN id = $myID THEN Total_Sales ELSE 0 END) >= 15000 THEN SUM(CASE WHEN id = $myID THEN Total_Sales * 0.25 ELSE 0 END)
+        WHEN SUM(CASE WHEN id = $myID THEN Total_Sales ELSE 0 END) >= 5000 THEN SUM(CASE WHEN id = $myID THEN Total_Sales * 0.20 ELSE 0 END)
+    END AS selfsales
+FROM SalesConnections
+WHERE salesdate BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND NOW();");
+
+
+
+// for group
+SELECT SUM(
+        CASE
+            WHEN p1 = $myID THEN Total_Sales * 0.05
+            ELSE 0
+        END
+    ) + Sum(
+        case
+            when p2 = $myID then Total_Sales * 0.03
+            else 0
+        end
+    ) + Sum(
+        case
+            when p3 = $myID then Total_Sales * 0.02
+            else 0
+        end
+    ) + Sum(
+        case
+            when p4 = $myID then Total_Sales * 0.02
+            else 0
+        end
+    ) AS Groupsales
+FROM SalesConnections WHERE salesdate BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND NOW();");
