@@ -1,4 +1,11 @@
-
+// Making connection table
+INSERT INTO connections (id, p1, p2, p3, p4)
+VALUES (
+    $myID,
+    (SELECT p1 FROM customer WHERE Customer_Id = $myID LIMIT 1), -- p2
+    (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = $myID) LIMIT 1), -- p3
+    (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = $myID)) LIMIT 1) -- p4
+);
 // Making Views
 
 create view SalesConnections as
