@@ -1,11 +1,15 @@
 // Making connection table
-INSERT INTO connections (id, p1, p2, p3, p4)
-VALUES (
-    $myID,
-    (SELECT p1 FROM customer WHERE Customer_Id = $myID LIMIT 1), -- p2
-    (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = $myID) LIMIT 1), -- p3
-    (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = $myID)) LIMIT 1) -- p4
-);
+CREATE PROCEDURE InsertConnectionChain(IN myID INT)
+BEGIN
+    INSERT INTO connections (id, p1, p2, p3, p4)
+    VALUES (
+        myID,
+        (SELECT p1 FROM customer WHERE Customer_Id = myID LIMIT 1),
+        (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = myID) LIMIT 1),
+        (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = myID)) LIMIT 1),
+        (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = (SELECT p1 FROM customer WHERE Customer_Id = myID))) LIMIT 1)
+    );
+END //
 // Making Views
 
 create view SalesConnections as
